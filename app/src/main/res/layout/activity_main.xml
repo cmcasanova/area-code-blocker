@@ -4,9 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="#EEF0F8">
 
-    <!-- Top app bar -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,14 +13,14 @@
         app:liftOnScroll="true">
 
         <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="@string/app_name"
-            app:titleTextAppearance="?attr/textAppearanceTitleLarge" />
+            app:menu="@menu/menu_main" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Scrollable body -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -38,10 +37,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                app:cardElevation="0dp"
+                app:cardElevation="2dp"
                 app:cardCornerRadius="16dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="@color/surface_variant">
+                app:cardBackgroundColor="#FFFFFF">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -53,14 +51,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Status"
-                        android:textAppearance="?attr/textAppearanceTitleMedium"
-                        android:layout_marginBottom="12dp" />
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#1A1A1A"
+                        android:layout_marginBottom="10dp" />
 
                     <TextView
                         android:id="@+id/statusText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textSize="14sp"
+                        android:textColor="#1A1A1A"
                         android:lineSpacingMultiplier="1.5" />
 
                 </LinearLayout>
@@ -71,10 +72,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                app:cardElevation="0dp"
+                app:cardElevation="2dp"
                 app:cardCornerRadius="16dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="@color/surface_variant">
+                app:cardBackgroundColor="#FFFFFF">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -86,7 +86,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Blocked Area Codes"
-                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#1A1A1A"
                         android:layout_marginBottom="16dp" />
 
                     <!-- Input row -->
@@ -109,6 +111,7 @@
                                 android:id="@+id/areaCodeInput"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:textColor="#1A1A1A"
                                 android:inputType="number"
                                 android:maxLength="3" />
 
@@ -129,12 +132,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="No area codes added yet. Add one above."
-                        android:textAppearance="?attr/textAppearanceBodySmall"
-                        android:textColor="@color/on_surface_variant"
+                        android:textSize="14sp"
+                        android:textColor="#666666"
                         android:gravity="center"
                         android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:visibility="visible" />
+                        android:paddingBottom="8dp" />
 
                     <!-- Area code chips -->
                     <com.google.android.material.chip.ChipGroup
@@ -147,10 +149,10 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/surface_variant"
+                        android:background="#E0E0E0"
                         android:layout_marginBottom="12dp" />
 
-                    <!-- Import / Export row -->
+                    <!-- Import / Export -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -177,56 +179,6 @@
                             style="@style/Widget.Material3.Button.OutlinedButton" />
 
                     </LinearLayout>
-
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- ── SETUP / PERMISSIONS CARD ── -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                app:cardElevation="0dp"
-                app:cardCornerRadius="16dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="@color/surface_variant">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Permissions"
-                        android:textAppearance="?attr/textAppearanceTitleMedium"
-                        android:layout_marginBottom="16dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/requestRoleButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:text="@string/grant_screening_role"
-                        style="@style/Widget.Material3.Button.TonalButton" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/requestContactsButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:text="@string/grant_contacts"
-                        style="@style/Widget.Material3.Button.TonalButton" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/requestNotificationsButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Grant notifications permission"
-                        android:visibility="gone"
-                        style="@style/Widget.Material3.Button.TonalButton" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

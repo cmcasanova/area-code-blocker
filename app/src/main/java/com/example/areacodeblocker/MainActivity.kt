@@ -15,7 +15,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -31,9 +33,6 @@ class MainActivity : ComponentActivity() {
     private lateinit var areaCodeInput: TextInputEditText
     private lateinit var chipGroup: ChipGroup
     private lateinit var emptyText: TextView
-    private lateinit var roleButton: MaterialButton
-    private lateinit var contactsButton: MaterialButton
-    private lateinit var notificationsButton: MaterialButton
 
     private val roleLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) { updateAll() }
@@ -62,12 +61,11 @@ class MainActivity : ComponentActivity() {
         areaCodeInput = findViewById(R.id.areaCodeInput)
         chipGroup = findViewById(R.id.chipGroup)
         emptyText = findViewById(R.id.emptyText)
-        roleButton = findViewById(R.id.requestRoleButton)
-        contactsButton = findViewById(R.id.requestContactsButton)
-        notificationsButton = findViewById(R.id.requestNotificationsButton)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            notificationsButton.visibility = View.VISIBLE
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar.setOnMenuItemClickListener { item ->
+            if (item.itemId == R.id.action_permissions) { showPermissionsSheet(); true }
+            else false
         }
 
         findViewById<MaterialButton>(R.id.addAreaCodeButton).setOnClickListener { addAreaCode() }
@@ -76,15 +74,6 @@ class MainActivity : ComponentActivity() {
         }
         findViewById<MaterialButton>(R.id.exportButton).setOnClickListener {
             exportLauncher.launch("area_codes.txt")
-        }
-        roleButton.setOnClickListener { requestRole() }
-        contactsButton.setOnClickListener {
-            contactsLauncher.launch(Manifest.permission.READ_CONTACTS)
-        }
-        notificationsButton.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                notificationsLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
         }
     }
 
@@ -101,35 +90,61 @@ class MainActivity : ComponentActivity() {
     private fun updateStatus() {
         val hasRole = isRoleHeld()
         val hasContacts = hasPerm(Manifest.permission.READ_CONTACTS)
+        val hasNotif = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                hasPerm(Manifest.permission.POST_NOTIFICATIONS)
+        val allGranted = hasRole && hasContacts && hasNotif
         val codes = getAreaCodes()
 
-        val sb = StringBuilder()
-        sb.appendLine(permLine("Call screening role", hasRole))
-        sb.appendLine(permLine("Contacts access", hasContacts))
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val hasNotif = hasPerm(Manifest.permission.POST_NOTIFICATIONS)
-            sb.appendLine(permLine("Notifications", hasNotif))
-            notificationsButton.isEnabled = !hasNotif
-            notificationsButton.text =
-                if (hasNotif) "Notifications — granted ✓" else "Grant notifications permission"
+        statusText.text = when {
+            !allGranted -> "⚠  Setup required — tap ⚙ to configure permissions."
+            codes.isEmpty() -> "✅  Ready — add area codes above to start blocking."
+            else -> "🛡  Active — blocking calls from ${codes.size} area code${if (codes.size == 1) "" else "s"}."
         }
-        sb.appendLine()
-        sb.append(when {
-            codes.isEmpty() -> "Add area codes above to start blocking calls."
-            !hasRole || !hasContacts -> "Finish setup below to activate blocking."
-            else -> "Active — ${codes.size} area code${if (codes.size == 1) "" else "s"} will be silently rejected."
-        })
-
-        statusText.text = sb.toString()
-
-        roleButton.isEnabled = !hasRole
-        roleButton.text = if (hasRole) "Call screening — granted ✓" else getString(R.string.grant_screening_role)
-        contactsButton.isEnabled = !hasContacts
-        contactsButton.text = if (hasContacts) "Contacts — granted ✓" else getString(R.string.grant_contacts)
     }
 
-    private fun permLine(name: String, granted: Boolean): String =
-        if (granted) "✅  $name" else "❌  $name"
+    private fun showPermissionsSheet() {
+        val sheet = BottomSheetDialog(this)
+        val view = layoutInflater.inflate(R.layout.bottom_sheet_permissions, null)
+        sheet.setContentView(view)
+
+        val roleBtn = view.findViewById<MaterialButton>(R.id.sheetRoleButton)
+        val contactsBtn = view.findViewById<MaterialButton>(R.id.sheetContactsButton)
+        val notifRow = view.findViewById<View>(R.id.sheetNotifRow)
+        val notifBtn = view.findViewById<MaterialButton>(R.id.sheetNotifButton)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            notifRow.visibility = View.VISIBLE
+        }
+
+        fun refreshSheet() {
+            val hasRole = isRoleHeld()
+            val hasContacts = hasPerm(Manifest.permission.READ_CONTACTS)
+            roleBtn.isEnabled = !hasRole
+            roleBtn.text = if (hasRole) "✓  Granted" else "Grant Role"
+            contactsBtn.isEnabled = !hasContacts
+            contactsBtn.text = if (hasContacts) "✓  Granted" else "Grant Access"
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val hasNotif = hasPerm(Manifest.permission.POST_NOTIFICATIONS)
+                notifBtn.isEnabled = !hasNotif
+                notifBtn.text = if (hasNotif) "✓  Granted" else "Grant Permission"
+            }
+        }
+
+        refreshSheet()
+
+        roleBtn.setOnClickListener { sheet.dismiss(); requestRole() }
+        contactsBtn.setOnClickListener {
+            sheet.dismiss()
+            contactsLauncher.launch(Manifest.permission.READ_CONTACTS)
+        }
+        notifBtn.setOnClickListener {
+            sheet.dismiss()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                notificationsLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
+        sheet.show()
+    }
 
     private fun addAreaCode() {
         val code = areaCodeInput.text.toString().trim().filter { it.isDigit() }
@@ -193,7 +208,6 @@ class MainActivity : ComponentActivity() {
                     .filter { it.length == 3 }
                     .toSet()
             } ?: emptySet()
-
             if (incoming.isEmpty()) {
                 Toast.makeText(this, "No valid area codes found in file", Toast.LENGTH_SHORT).show()
                 return
@@ -208,11 +222,6 @@ class MainActivity : ComponentActivity() {
             Toast.makeText(this, "Import failed", Toast.LENGTH_SHORT).show()
         }
     }
-
-    private fun getFileName(uri: Uri): String? = try {
-        contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME),
-            null, null, null)?.use { c -> if (c.moveToFirst()) c.getString(0) else null }
-    } catch (e: Exception) { null }
 
     private fun getAreaCodes(): Set<String> =
         prefs.getStringSet(PREF_AREA_CODES, emptySet()) ?: emptySet()
