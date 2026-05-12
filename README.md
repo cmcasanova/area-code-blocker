@@ -10,9 +10,10 @@ Built on Android's `CallScreeningService` API, it intercepts calls *before* your
 
 ## Features
 
-- **Configurable area code list** — add or remove any 3-digit area codes you want to block. Nothing is blocked by default.
+- **Configurable area code list** — add or remove any 3-digit area codes. Nothing is blocked by default.
 - **Contacts passthrough** — calls from numbers in your contacts are always allowed through, regardless of area code.
-- **Silent rejection** — blocked calls are ended before the phone rings. They still appear in your call log so you can see who tried.
+- **Silent rejection** — blocked calls are ended before the phone rings. They still appear in your call log.
+- **Allow-only mode** — flip the logic: block everything *except* calls from your selected area codes and contacts. Toggle in Settings, off by default.
 - **Block statistics** — see how many calls were blocked today, in the last 24 hours, last 30 days, and last year.
 - **Notification toggle** — enable or disable blocked-call notifications from the main screen.
 - **Import / Export** — back up your area codes and block history to a single JSON file; restore after reinstalls or share with others. Old plain-text exports are still supported on import.
@@ -22,12 +23,19 @@ Built on Android's `CallScreeningService` API, it intercepts calls *before* your
 
 ## How It Works
 
-The app registers as the system's **Call Screening** role holder. When an incoming call arrives, Android invokes `onScreenCall()` before the dialer is notified. The app checks:
+The app registers as the system's **Call Screening** role holder. When an incoming call arrives, Android invokes `onScreenCall()` before the dialer is notified.
 
+**Normal mode (default):**
 1. Is the area code in the blocked list?
 2. If yes — is the number in the user's contacts?
 
-If the area code matches and the number is *not* in contacts, the call is rejected with `setDisallowCall(true)` + `setRejectCall(true)` — silently and instantly, before the phone ever rings.
+If the area code matches and the number is *not* in contacts, the call is rejected silently before the phone ever rings.
+
+**Allow-only mode:**
+1. Is the area code in the allowed list, or is the number in contacts?
+2. If neither — block the call.
+
+Numbers with unrecognizable formats (international, short codes) are always allowed through in either mode.
 
 Failure is fail-safe: if the contacts permission is missing or a query throws, the call is allowed through rather than risk blocking someone important.
 
@@ -48,7 +56,7 @@ Failure is fail-safe: if the contacts permission is missing or a query throws, t
 2. Open the app and tap the **⚙** icon → **Grant call-screening role**.
 3. Grant **contacts access**.
 4. On Android 13+, grant **notifications permission** if you want to be notified when calls are blocked.
-5. Add the area codes you want to block.
+5. Add the area codes you want to block (or allow, if using allow-only mode).
 
 The app works in the background with no ongoing notification required.
 
