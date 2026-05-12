@@ -15,6 +15,8 @@ import androidx.core.content.ContextCompat
 
 const val PREFS_NAME = "area_code_prefs"
 const val PREF_AREA_CODES = "area_codes"
+const val PREF_BLOCKED_TIMESTAMPS = "blocked_timestamps"
+const val PREF_NOTIFICATIONS_ENABLED = "notifications_enabled"
 
 class AreaCodeScreeningService : CallScreeningService() {
 
@@ -22,6 +24,7 @@ class AreaCodeScreeningService : CallScreeningService() {
         private const val TAG = "AreaCodeBlocker"
         private const val CHANNEL_ID = "blocked_calls"
         private const val NOTIF_ID = 2
+        private const val ONE_YEAR_MS = 365L * 24 * 60 * 60 * 1000
     }
 
     override fun onScreenCall(callDetails: Call.Details) {
@@ -51,12 +54,26 @@ class AreaCodeScreeningService : CallScreeningService() {
             return
         }
 
-        Log.d(TAG, "Spam area code — rejecting silently")
+        Log.d(TAG, "Blocked area code — rejecting silently")
+        recordBlock()
         notifyBlocked(rawNumber)
         respondReject(callDetails)
     }
 
+    private fun recordBlock() {
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        val now = System.currentTimeMillis()
+        val cutoff = now - ONE_YEAR_MS
+        val existing = prefs.getStringSet(PREF_BLOCKED_TIMESTAMPS, emptySet()) ?: emptySet()
+        val updated = existing.filterTo(mutableSetOf()) { (it.toLongOrNull() ?: 0L) >= cutoff }
+        updated.add(now.toString())
+        prefs.edit().putStringSet(PREF_BLOCKED_TIMESTAMPS, updated).apply()
+    }
+
     private fun notifyBlocked(number: String) {
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        if (!prefs.getBoolean(PREF_NOTIFICATIONS_ENABLED, true)) return
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val nm = getSystemService(NotificationManager::class.java)
             nm.createNotificationChannel(

@@ -67,6 +67,142 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- ── STATISTICS CARD ── -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#1E2029">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Calls Blocked"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#E3E2E8"
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- Today -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="6dp">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Today"
+                            android:textSize="14sp"
+                            android:textColor="#C4C6D0" />
+                        <TextView
+                            android:id="@+id/statToday"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="#7CB8F0" />
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp"
+                        android:background="#2E2F3A" />
+
+                    <!-- Last 24 hours -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="6dp">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Last 24 hours"
+                            android:textSize="14sp"
+                            android:textColor="#C4C6D0" />
+                        <TextView
+                            android:id="@+id/stat24h"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="#7CB8F0" />
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp"
+                        android:background="#2E2F3A" />
+
+                    <!-- Last 30 days -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="6dp">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Last 30 days"
+                            android:textSize="14sp"
+                            android:textColor="#C4C6D0" />
+                        <TextView
+                            android:id="@+id/stat30d"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="#7CB8F0" />
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp"
+                        android:background="#2E2F3A" />
+
+                    <!-- Last year -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="6dp">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Last year"
+                            android:textSize="14sp"
+                            android:textColor="#C4C6D0" />
+                        <TextView
+                            android:id="@+id/stat1y"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="#7CB8F0" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- ── BLOCKED AREA CODES CARD ── -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -177,6 +313,70 @@
                             android:text="Export"
                             app:icon="@android:drawable/ic_menu_save"
                             style="@style/Widget.Material3.Button.OutlinedButton" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ── SETTINGS CARD ── -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#1E2029">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Settings"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#E3E2E8"
+                        android:layout_marginBottom="16dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Block notifications"
+                                android:textSize="14sp"
+                                android:textColor="#E3E2E8" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Show a notification when a call is blocked"
+                                android:textSize="12sp"
+                                android:textColor="#9E9EA8"
+                                android:layout_marginTop="2dp" />
+
+                        </LinearLayout>
+
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/notifSwitch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp" />
 
                     </LinearLayout>
 
