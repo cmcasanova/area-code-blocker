@@ -1,4 +1,4 @@
-# Area Code Spammer Trap
+# Area Code Blocker
 
 An Android app that silently rejects incoming calls from user-configured area codes — unless the caller is already in your contacts.
 
@@ -11,11 +11,12 @@ Built on Android's `CallScreeningService` API, it intercepts calls *before* your
 ## Features
 
 - **Configurable area code list** — add or remove any 3-digit area codes you want to block. Nothing is blocked by default.
-- **Contacts passthrough** — calls from numbers already in your contacts are always allowed through, regardless of area code.
+- **Contacts passthrough** — calls from numbers in your contacts are always allowed through, regardless of area code.
 - **Silent rejection** — blocked calls are ended before the phone rings. They still appear in your call log so you can see who tried.
-- **Blocked call notifications** — optional notification each time a call is rejected, showing the number.
-- **Import / Export** — save your area code list to a plain text file (one code per line) and restore it after reinstalls or share it with others.
-- **Material Design 3 UI** — clean card-based interface with automatic light/dark mode support.
+- **Block statistics** — see how many calls were blocked today, in the last 24 hours, last 30 days, and last year.
+- **Notification toggle** — enable or disable blocked-call notifications from the main screen.
+- **Import / Export** — back up your area codes and block history to a single JSON file; restore after reinstalls or share with others. Old plain-text exports are still supported on import.
+- **Dark mode UI** — Material Design 3 card-based interface, always dark.
 
 ---
 
@@ -44,9 +45,9 @@ Failure is fail-safe: if the contacts permission is missing or a query throws, t
 ## Setup
 
 1. Install the APK or build from source.
-2. Open the app and tap **Grant call-screening role** — Android will prompt you to confirm.
-3. Tap **Grant contacts access**.
-4. On Android 13+, tap **Grant notifications permission** if you want to be notified when calls are blocked.
+2. Open the app and tap the **⚙** icon → **Grant call-screening role**.
+3. Grant **contacts access**.
+4. On Android 13+, grant **notifications permission** if you want to be notified when calls are blocked.
 5. Add the area codes you want to block.
 
 The app works in the background with no ongoing notification required.
@@ -82,10 +83,32 @@ Requires Android Studio Hedgehog or newer (or a standalone SDK with Gradle). JDK
 
 ---
 
+## Backup File Format
+
+The export file is plain JSON and human-readable:
+
+```json
+{
+  "version": 1,
+  "areaCodes": ["212", "518", "917"],
+  "blockedTimestamps": [1715000000000, 1715003600000]
+}
+```
+
+`blockedTimestamps` are Unix milliseconds. The app retains up to one year of history.
+
+---
+
 ## Compatibility Notes
 
 - Coexists with Google's call screening (Pixel) and carrier spam filters. The system runs all registered screening services — a reject from any one ends the call.
 - Some OEMs (Samsung, Xiaomi) require you to enable autostart / disable battery optimization for the screening service to remain reliably bound after reboot. If calls stop being blocked after a while, check those settings.
+
+---
+
+## Privacy Policy
+
+[View privacy policy](https://cmcasanova.github.io/area-code-blocker/privacy-policy.html)
 
 ---
 
