@@ -17,6 +17,7 @@ const val PREFS_NAME = "area_code_prefs"
 const val PREF_AREA_CODES = "area_codes"
 const val PREF_BLOCKED_TIMESTAMPS = "blocked_timestamps"
 const val PREF_NOTIFICATIONS_ENABLED = "notifications_enabled"
+const val PREF_REVERSE_MODE = "reverse_mode"
 
 class AreaCodeScreeningService : CallScreeningService() {
 
@@ -42,19 +43,26 @@ class AreaCodeScreeningService : CallScreeningService() {
         val digits = rawNumber.filter { it.isDigit() }
         Log.d(TAG, "Incoming: $rawNumber")
 
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
         val areaCodes = getAreaCodes()
-        if (areaCodes.isEmpty() || !matchesAreaCode(digits, areaCodes)) {
+        val reverseMode = prefs.getBoolean(PREF_REVERSE_MODE, false)
+        val areaCode = extractAreaCode(digits)
+
+        val shouldBlock = if (reverseMode) {
+            // Block unless: area code is in the allow-list, in contacts, or unrecognized format
+            areaCode != null && areaCode !in areaCodes && !isInContacts(rawNumber)
+        } else {
+            // Block if area code is in the blocked list and not in contacts
+            areaCode != null && areaCode in areaCodes && !isInContacts(rawNumber)
+        }
+
+        if (!shouldBlock) {
+            Log.d(TAG, "Allowing call")
             respondAllow(callDetails)
             return
         }
 
-        if (isInContacts(rawNumber)) {
-            Log.d(TAG, "In contacts — allowing")
-            respondAllow(callDetails)
-            return
-        }
-
-        Log.d(TAG, "Blocked area code — rejecting silently")
+        Log.d(TAG, "Rejecting call silently")
         recordBlock()
         notifyBlocked(rawNumber)
         respondReject(callDetails)
@@ -93,13 +101,10 @@ class AreaCodeScreeningService : CallScreeningService() {
         getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
             .getStringSet(PREF_AREA_CODES, emptySet()) ?: emptySet()
 
-    private fun matchesAreaCode(digits: String, codes: Set<String>): Boolean {
-        val areaCode = when {
-            digits.length == 11 && digits.startsWith("1") -> digits.substring(1, 4)
-            digits.length == 10 -> digits.substring(0, 3)
-            else -> return false
-        }
-        return areaCode in codes
+    private fun extractAreaCode(digits: String): String? = when {
+        digits.length == 11 && digits.startsWith("1") -> digits.substring(1, 4)
+        digits.length == 10 -> digits.substring(0, 3)
+        else -> null
     }
 
     private fun isInContacts(phoneNumber: String): Boolean {

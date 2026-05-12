@@ -40,6 +40,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var stat30d: TextView
     private lateinit var stat1y: TextView
     private lateinit var notifSwitch: MaterialSwitch
+    private lateinit var reverseSwitch: MaterialSwitch
 
     private val roleLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) { updateAll() }
@@ -72,7 +73,8 @@ class MainActivity : ComponentActivity() {
         stat24h      = findViewById(R.id.stat24h)
         stat30d      = findViewById(R.id.stat30d)
         stat1y       = findViewById(R.id.stat1y)
-        notifSwitch  = findViewById(R.id.notifSwitch)
+        notifSwitch   = findViewById(R.id.notifSwitch)
+        reverseSwitch = findViewById(R.id.reverseSwitch)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         toolbar.setOnMenuItemClickListener { item ->
@@ -83,6 +85,12 @@ class MainActivity : ComponentActivity() {
         notifSwitch.isChecked = prefs.getBoolean(PREF_NOTIFICATIONS_ENABLED, true)
         notifSwitch.setOnCheckedChangeListener { _, checked ->
             prefs.edit().putBoolean(PREF_NOTIFICATIONS_ENABLED, checked).apply()
+        }
+
+        reverseSwitch.isChecked = prefs.getBoolean(PREF_REVERSE_MODE, false)
+        reverseSwitch.setOnCheckedChangeListener { _, checked ->
+            prefs.edit().putBoolean(PREF_REVERSE_MODE, checked).apply()
+            updateStatus()
         }
 
         findViewById<MaterialButton>(R.id.addAreaCodeButton).setOnClickListener { addAreaCode() }
@@ -112,11 +120,17 @@ class MainActivity : ComponentActivity() {
                 hasPerm(Manifest.permission.POST_NOTIFICATIONS)
         val allGranted  = hasRole && hasContacts && hasNotif
         val codes       = getAreaCodes()
+        val reverse     = prefs.getBoolean(PREF_REVERSE_MODE, false)
 
         statusText.text = when {
-            !allGranted  -> "⚠  Setup required — tap ⚙ to configure permissions."
-            codes.isEmpty() -> "✅  Ready — add area codes above to start blocking."
-            else         -> "🛡  Active — blocking calls from ${codes.size} area code${if (codes.size == 1) "" else "s"}."
+            !allGranted          -> "⚠  Setup required — tap ⚙ to configure permissions."
+            reverse && codes.isEmpty() ->
+                "⚠  Allow-only mode is on but no area codes are set — all non-contact calls will be blocked."
+            reverse              ->
+                "🛡  Allow-only — permitting calls from ${codes.size} area code${if (codes.size == 1) "" else "s"} and contacts."
+            codes.isEmpty()      -> "✅  Ready — add area codes above to start blocking."
+            else                 ->
+                "🛡  Active — blocking calls from ${codes.size} area code${if (codes.size == 1) "" else "s"}."
         }
     }
 
