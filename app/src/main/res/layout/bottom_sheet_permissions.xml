@@ -15,7 +15,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="20dp"
-        android:background="#CCCCCC"
+        android:background="#44464F"
         android:backgroundTint="?attr/colorOnSurfaceVariant"
         android:backgroundTintMode="multiply" />
 
