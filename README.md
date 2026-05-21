@@ -13,6 +13,7 @@ Built on Android's `CallScreeningService` API, it intercepts calls *before* your
 - **Configurable area code list** — add or remove any 3-digit area codes. Nothing is blocked by default.
 - **Contacts passthrough** — calls from numbers in your contacts are always allowed through, regardless of area code.
 - **Silent rejection** — blocked calls are ended before the phone rings. They still appear in your call log.
+- **One-tap pause** — master enable/disable switch at the top of the main screen turns blocking off without touching your area code list.
 - **Allow-only mode** — flip the logic: block everything *except* calls from your selected area codes and contacts. Toggle in Settings, off by default.
 - **Block statistics** — see how many calls were blocked today, in the last 24 hours, last 30 days, and last year.
 - **Notification toggle** — enable or disable blocked-call notifications from the main screen.
