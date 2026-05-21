@@ -39,6 +39,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var stat24h: TextView
     private lateinit var stat30d: TextView
     private lateinit var stat1y: TextView
+    private lateinit var enabledSwitch: MaterialSwitch
     private lateinit var notifSwitch: MaterialSwitch
     private lateinit var reverseSwitch: MaterialSwitch
 
@@ -73,6 +74,7 @@ class MainActivity : ComponentActivity() {
         stat24h      = findViewById(R.id.stat24h)
         stat30d      = findViewById(R.id.stat30d)
         stat1y       = findViewById(R.id.stat1y)
+        enabledSwitch = findViewById(R.id.enabledSwitch)
         notifSwitch   = findViewById(R.id.notifSwitch)
         reverseSwitch = findViewById(R.id.reverseSwitch)
 
@@ -80,6 +82,12 @@ class MainActivity : ComponentActivity() {
         toolbar.setOnMenuItemClickListener { item ->
             if (item.itemId == R.id.action_permissions) { showPermissionsSheet(); true }
             else false
+        }
+
+        enabledSwitch.isChecked = prefs.getBoolean(PREF_BLOCKING_ENABLED, true)
+        enabledSwitch.setOnCheckedChangeListener { _, checked ->
+            prefs.edit().putBoolean(PREF_BLOCKING_ENABLED, checked).apply()
+            updateStatus()
         }
 
         notifSwitch.isChecked = prefs.getBoolean(PREF_NOTIFICATIONS_ENABLED, true)
@@ -121,9 +129,11 @@ class MainActivity : ComponentActivity() {
         val allGranted  = hasRole && hasContacts && hasNotif
         val codes       = getAreaCodes()
         val reverse     = prefs.getBoolean(PREF_REVERSE_MODE, false)
+        val enabled     = prefs.getBoolean(PREF_BLOCKING_ENABLED, true)
 
         statusText.text = when {
             !allGranted          -> "⚠  Setup required — tap ⚙ to configure permissions."
+            !enabled             -> "⏸  Paused — call blocking is turned off."
             reverse && codes.isEmpty() ->
                 "⚠  Allow-only mode is on but no area codes are set — all non-contact calls will be blocked."
             reverse              ->

@@ -18,6 +18,7 @@ const val PREF_AREA_CODES = "area_codes"
 const val PREF_BLOCKED_TIMESTAMPS = "blocked_timestamps"
 const val PREF_NOTIFICATIONS_ENABLED = "notifications_enabled"
 const val PREF_REVERSE_MODE = "reverse_mode"
+const val PREF_BLOCKING_ENABLED = "blocking_enabled"
 
 class AreaCodeScreeningService : CallScreeningService() {
 
@@ -44,6 +45,12 @@ class AreaCodeScreeningService : CallScreeningService() {
         Log.d(TAG, "Incoming: $rawNumber")
 
         val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        if (!prefs.getBoolean(PREF_BLOCKING_ENABLED, true)) {
+            Log.d(TAG, "Blocking is paused, allowing call")
+            respondAllow(callDetails)
+            return
+        }
+
         val areaCodes = getAreaCodes()
         val reverseMode = prefs.getBoolean(PREF_REVERSE_MODE, false)
         val areaCode = extractAreaCode(digits)
